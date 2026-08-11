@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// Importamos os componentes essenciais de navegação do React Navigation
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+// Importamos a tela que vamos construir nos próximos passos
+import Home from "./src/screens/Home";
+
+// Instanciamos o navegador do tipo "Stack" (Pilha)
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        {/* Registrando a tela Home na pilha e definindo o título do cabeçalho */}
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{ title: "Meu App de Tarefas" }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
