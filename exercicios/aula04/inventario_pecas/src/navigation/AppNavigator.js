@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Dashboard from "../screens/Dashboard";
 import Inventory from "../screens/Inventory";
 import NewItem from "../screens/NewItem";
+import EditItem from "../screens/EditItem";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -17,6 +18,11 @@ function InventoryStack() {
         name="InventoryList"
         component={Inventory}
         options={{ title: "Lista de Peças" }}
+      />
+      <Stack.Screen
+        name="EditItem"
+        component={EditItem}
+        options={{ title: "Editar Peça" }}
       />
     </Stack.Navigator>
   );

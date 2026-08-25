@@ -30,17 +30,37 @@ export const InventoryProvider = ({ children }) => {
     categoria,
     quantidade,
     serial,
-    imagemUri
+    imagemUri,
   ) => {
     try {
       const db = await SQLite.openDatabaseAsync("techinventory.db");
       await db.runAsync(
         "INSERT INTO pecas (nome, categoria, quantidade, serial, imagemUri) VALUES (?, ?, ?, ?, ?)",
-        [nome, categoria, quantidade, serial, imagemUri]
+        [nome, categoria, quantidade, serial, imagemUri],
       );
       carregarPecas(); // Atualiza a lista na UI
     } catch (err) {
       console.log("Erro ao inserir peça:", err);
+    }
+  };
+
+  const editarPeca = async (
+    id,
+    nome,
+    categoria,
+    quantidade,
+    serial,
+    imagemUri,
+  ) => {
+    try {
+      const db = await SQLite.openDatabaseAsync("techinventory.db");
+      await db.runAsync(
+        "UPDATE pecas SET nome = ?, categoria = ?, quantidade = ?, serial = ?, imagemUri = ? WHERE id = ?",
+        [nome, categoria, quantidade, serial, imagemUri, id],
+      );
+      carregarPecas(); // Atualiza a lista na UI
+    } catch (err) {
+      console.log("Erro ao editar peça:", err);
     }
   };
 
@@ -56,7 +76,7 @@ export const InventoryProvider = ({ children }) => {
 
   return (
     <InventoryContext.Provider
-      value={{ pecas, carregarPecas, adicionarPeca, removerPeca }}
+      value={{ pecas, carregarPecas, adicionarPeca, editarPeca, removerPeca }}
     >
       {children}
     </InventoryContext.Provider>

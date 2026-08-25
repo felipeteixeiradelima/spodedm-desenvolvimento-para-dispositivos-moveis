@@ -9,12 +9,12 @@ import {
 } from "react-native";
 import { InventoryContext } from "../contexts/InventoryContext";
 
-export default function Inventory() {
+export default function Inventory({ navigation }) {
   const { pecas, removerPeca } = useContext(InventoryContext);
   const [busca, setBusca] = useState("");
 
   const pecasFiltradas = pecas.filter((p) =>
-    p.nome.toLowerCase().includes(busca.toLowerCase())
+    p.nome.toLowerCase().includes(busca.toLowerCase()),
   );
 
   return (
@@ -37,12 +37,20 @@ export default function Inventory() {
               </Text>
               <Text style={styles.serial}>Serial: {item.serial}</Text>
             </View>
-            <TouchableOpacity
-              style={styles.btnDelete}
-              onPress={() => removerPeca(item.id)}
-            >
-              <Text style={styles.btnText}>Excluir</Text>
-            </TouchableOpacity>
+            <View>
+              <TouchableOpacity
+                style={styles.btnEdit}
+                onPress={() => navigation.navigate("EditItem", { id: item.id })}
+              >
+                <Text style={styles.btnText}>Editar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btnDelete}
+                onPress={() => removerPeca(item.id)}
+              >
+                <Text style={styles.btnText}>Excluir</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
@@ -73,6 +81,17 @@ const styles = StyleSheet.create({
   nome: { fontSize: 18, fontWeight: "bold" },
   categoria: { color: "#666", marginTop: 4 },
   serial: { color: "#999", fontSize: 12, marginTop: 4 },
-  btnDelete: { backgroundColor: "#e74c3c", padding: 8, borderRadius: 5 },
-  btnText: { color: "#fff", fontWeight: "bold" },
+  btnEdit: {
+    backgroundColor: "#3498db",
+    padding: 8,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  btnDelete: {
+    backgroundColor: "#e74c3c",
+    padding: 8,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  btnText: { color: "#fff", fontWeight: "bold", textAlign: "center" },
 });

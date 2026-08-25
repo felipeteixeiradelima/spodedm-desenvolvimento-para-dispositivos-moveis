@@ -1,58 +1,74 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  View,
+  Alert,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  Alert,
 } from "react-native";
 import { InventoryContext } from "../contexts/InventoryContext";
 
-export default function NewItem({ navigation }) {
-  const { adicionarPeca } = useContext(InventoryContext);
-  const [nome, setNome] = useState("");
-  const [categoria, setCategoria] = useState("");
+export default function EditItem({ navigation, route }) {
+  const { pecas, editarPeca } = useContext(InventoryContext);
+  const { id } = route.params;
   const [quantidade, setQuantidade] = useState("1");
-  const [serial, setSerial] = useState("");
+  const peca = pecas.find((item) => item.id === id);
+
+  useEffect(() => {
+    if (peca) {
+      setQuantidade(String(peca.quantidade));
+    }
+  }, [peca]);
 
   const salvar = () => {
-    if (!nome || !categoria) {
-      Alert.alert("Erro", "Preencha o nome e a categoria.");
+    const novaQuantidade = parseInt(quantidade, 10);
+
+    if (!peca) {
+      Alert.alert("Erro", "Peça não encontrada.");
       return;
     }
 
-    if (quantidade <= 0) {
+    if (Number.isNaN(novaQuantidade) || novaQuantidade <= 0) {
       Alert.alert("Erro", "A quantidade deve ser maior que zero.");
       return;
     }
 
-    adicionarPeca(nome, categoria, parseInt(quantidade), serial, "");
-    Alert.alert("Sucesso", "Componente registado com sucesso!");
-    setNome("");
-    setCategoria("");
-    setQuantidade("1");
-    setSerial("");
-    navigation.navigate("Inventário");
+    editarPeca(
+      id,
+      peca.nome,
+      peca.categoria,
+      novaQuantidade,
+      peca.serial,
+      peca.imagemUri,
+    );
+    navigation.goBack();
   };
+
+  if (!peca) {
+    return (
+      <ScrollView style={styles.container}>
+        <Text>Carregando peça...</Text>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.label}>Nome do Componente</Text>
       <TextInput
         style={styles.input}
-        value={nome}
-        onChangeText={setNome}
+        value={peca.nome}
         placeholder="Ex: Placa de Vídeo"
+        editable={false}
       />
 
       <Text style={styles.label}>Categoria</Text>
       <TextInput
         style={styles.input}
-        value={categoria}
-        onChangeText={setCategoria}
+        value={peca.categoria}
         placeholder="Ex: Sucata / Reparo"
+        editable={false}
       />
 
       <Text style={styles.label}>Quantidade</Text>
@@ -66,9 +82,9 @@ export default function NewItem({ navigation }) {
       <Text style={styles.label}>Número de Série</Text>
       <TextInput
         style={styles.input}
-        value={serial}
-        onChangeText={setSerial}
+        value={peca.serial}
         placeholder="SN-XXXXX"
+        editable={false}
       />
 
       <TouchableOpacity style={styles.btn} onPress={salvar}>
