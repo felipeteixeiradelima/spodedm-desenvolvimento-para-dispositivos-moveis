@@ -36,11 +36,7 @@ export default function EditItem({ navigation, route }) {
 
     editarPeca(
       id,
-      peca.nome,
-      peca.categoria,
       novaQuantidade,
-      peca.serial,
-      peca.imagemUri,
     );
     navigation.goBack();
   };
