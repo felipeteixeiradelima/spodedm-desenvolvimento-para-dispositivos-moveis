@@ -27,9 +27,10 @@ export default function Inventory({ navigation }) {
         value={busca}
         onChangeText={setBusca}
       />
+      <TouchableOpacity style={styles.btnNew}>Adicionar Produto</TouchableOpacity>
       <FlatList
         data={produtosFiltrados}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.codigo.toString()}
         renderItem={({ item }) => (
           <View style={styles.item}>
             <View>
@@ -44,14 +45,14 @@ export default function Inventory({ navigation }) {
               <TouchableOpacity
                 style={styles.btnEdit}
                 onPress={() =>
-                  navigation.navigate("EditProduct", { id: item.id })
+                  navigation.navigate("EditProduct", { codigo: item.codigo })
                 }
               >
                 <Text style={styles.btnText}>Editar</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnDelete}
-                onPress={() => removerProdutos(item.id)}
+                onPress={() => removerProdutos(item.codigo)}
               >
                 <Text style={styles.btnText}>Excluir</Text>
               </TouchableOpacity>
@@ -87,6 +88,11 @@ const styles = StyleSheet.create({
   fornecedor: { color: "#665", marginTop: 4 },
   quantidade: { color: "#665", marginTop: 4 },
   codigo: { color: "#999", fontSize: 12, marginTop: 4 },
+  btnNew: {
+    backgroundColor: "green",
+    padding: 8,
+    borderRadius: 5,
+  },
   btnEdit: {
     backgroundColor: "#3498db",
     padding: 8,
