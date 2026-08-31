@@ -27,7 +27,12 @@ export default function Inventory({ navigation }) {
         value={busca}
         onChangeText={setBusca}
       />
-      <TouchableOpacity style={styles.btnNew}>Adicionar Produto</TouchableOpacity>
+      <TouchableOpacity
+        style={styles.btnNew}
+        onPress={() => navigation.navigate("NewProduct")}
+      >
+        Adicionar Produto
+      </TouchableOpacity>
       <FlatList
         data={produtosFiltrados}
         keyExtractor={(item) => item.codigo.toString()}
