@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useContext, useState } from "react";
 import {
   FlatList,
@@ -60,13 +61,13 @@ export default function Inventory({ navigation }) {
                   navigation.navigate("EditProduct", { codigo: item.codigo })
                 }
               >
-                <Text style={styles.btnText}>Editar</Text>
+                <Ionicons name="pencil" style={styles.btnText} size={20} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnDelete}
                 onPress={() => removerProdutos(item.codigo)}
               >
-                <Text style={styles.btnText}>Excluir</Text>
+                <Ionicons name="trash" style={styles.btnText} size={20} />
               </TouchableOpacity>
             </View>
           </View>
@@ -104,6 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
     padding: 8,
     borderRadius: 5,
+    marginBottom: 10,
   },
   btnEdit: {
     backgroundColor: "#3498db",
