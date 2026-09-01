@@ -7,14 +7,25 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { InventoryContext } from "../contexts/InventoryContext";
+import { InventoryContext } from "../../contexts/InventoryContext";
 
-export default function NewProduct({ navigation }) {
-  const { adicionarProduto } = useContext(InventoryContext);
+export default function EditProduct({ navigation }) {
+  const { produtos, editarProduto } = useContext(InventoryContext);  
   const [codigo, setCodigo] = useState("");
   const [nome, setNome] = useState("");
   const [quantidade, setQuantidade] = useState("1");
   const [fornecedor, setFornecedor] = useState("");
+
+  const produto = produtos.find((item) => item.id === id);
+
+  useEffect(() => {
+    if (produto) {
+      setCodigo(String(produto.codigo));
+      setNome(String(produto.nome));
+      setQuantidade(produto.quantidade);
+      setFornecedor(produto.fornecedor);
+    }
+  }, [produto]);
 
   const salvar = () => {
     if (!codigo || !nome || !fornecedor) {
@@ -27,8 +38,8 @@ export default function NewProduct({ navigation }) {
       return;
     }
 
-    adicionarProduto(codigo, nome, parseInt(quantidade), fornecedor);
-    Alert.alert("Sucesso", "Produto registado com sucesso!");
+    editarProduto(codigo, nome, parseInt(quantidade), fornecedor);
+    Alert.alert("Sucesso", "Produto alterado com sucesso!");
     navigation.goBack();
   };
 
