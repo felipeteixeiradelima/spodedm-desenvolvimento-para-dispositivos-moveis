@@ -8,7 +8,7 @@ export const initDB = async () => {
       codigo TEXT PRIMARY KEY, 
       nome TEXT, 
       quantidade INTEGER, 
-      fornecedor TEXT, 
+      fornecedor TEXT
     );
   `);
 
@@ -18,11 +18,11 @@ export const initDB = async () => {
 
   if (firstRowProdutos && firstRowProdutos.count === 0) {
     await db.runAsync(
-      "INSERT INTO produtos (codigo, nome, quantidade, fornecedor) VALUES (?, ?, ?, ?)",
+      "INSERT INTO tb_produtos (codigo, nome, quantidade, fornecedor) VALUES (?, ?, ?, ?)",
       ["7896238264474", "Placa de Vídeo RX 580", 1, "João Eletrônicos"]
     );
     await db.runAsync(
-      "INSERT INTO produtos (codigo, nome, quantidade, fornecedor) VALUES (?, ?, ?, ?)",
+      "INSERT INTO tb_produtos (codigo, nome, quantidade, fornecedor) VALUES (?, ?, ?, ?)",
       ["7891211029033", "Carrinho Hot Wheels Roadster Bite", 10, "Mattel"]
     );
   }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -16,7 +16,7 @@ export default function Inventory({ navigation }) {
   const produtosFiltrados = produtos.filter(
     (p) =>
       p.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      p.fornecedor.toLowerCase().includes(busca.toLowerCase())
+      p.fornecedor.toLowerCase().includes(busca.toLowerCase()),
   );
 
   return (
@@ -31,7 +31,7 @@ export default function Inventory({ navigation }) {
         style={styles.btnNew}
         onPress={() => navigation.navigate("NewProduct")}
       >
-        Adicionar Produto
+        <Text style={styles.btnText}>Adicionar Produto</Text>
       </TouchableOpacity>
       <FlatList
         data={produtosFiltrados}
@@ -39,14 +39,21 @@ export default function Inventory({ navigation }) {
         renderItem={({ item }) => (
           <View style={styles.item}>
             <View>
-              <Text style={styles.nome}>{item.nome}</Text>
+              <Text
+                style={styles.nome}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.5}
+              >
+                {item.nome}
+              </Text>
               <Text style={styles.codigo}>Código: {item.codigo}</Text>
               <Text style={styles.fornecedor}>
                 Fornecedor: {item.fornecedor}
               </Text>
               <Text style={styles.quantidade}>Qtd: {item.quantidade}</Text>
             </View>
-            <View>
+            <View style={styles.btnGroup}>
               <TouchableOpacity
                 style={styles.btnEdit}
                 onPress={() =>
@@ -89,7 +96,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 2,
   },
-  nome: { fontSize: 18, fontWeight: "bold" },
+  nome: { fontSize: 18, fontWeight: "bold", maxWidth: "90%" },
   fornecedor: { color: "#665", marginTop: 4 },
   quantidade: { color: "#665", marginTop: 4 },
   codigo: { color: "#999", fontSize: 12, marginTop: 4 },
