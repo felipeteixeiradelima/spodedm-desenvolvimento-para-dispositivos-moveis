@@ -32,8 +32,7 @@ export const initDB = async () => {
     CREATE TABLE IF NOT EXISTS tb_usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       email TEXT UNIQUE, 
-      senha TEXT,
-      logado BOOLEAN DEFAULT 0
+      senha TEXT
     );
   `);
 
