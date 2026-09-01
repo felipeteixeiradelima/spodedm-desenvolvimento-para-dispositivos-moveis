@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import { hashText } from "../util/hash.js";
 
 export const initDB = async () => {
   const db = await SQLite.openDatabaseAsync("bd_estoque.db");
@@ -13,17 +14,41 @@ export const initDB = async () => {
   `);
 
   const firstRowProdutos = await db.getFirstAsync(
-    "SELECT count(*) as count FROM tb_produtos"
+    "SELECT count(*) as count FROM tb_produtos",
   );
 
   if (firstRowProdutos && firstRowProdutos.count === 0) {
     await db.runAsync(
       "INSERT INTO tb_produtos (codigo, nome, quantidade, fornecedor) VALUES (?, ?, ?, ?)",
-      ["7896238264474", "Placa de Vídeo RX 580", 1, "João Eletrônicos"]
+      ["7896238264474", "Placa de Vídeo RX 580", 1, "João Eletrônicos"],
     );
     await db.runAsync(
       "INSERT INTO tb_produtos (codigo, nome, quantidade, fornecedor) VALUES (?, ?, ?, ?)",
-      ["7891211029033", "Carrinho Hot Wheels Roadster Bite", 10, "Mattel"]
+      ["7891211029033", "Carrinho Hot Wheels Roadster Bite", 10, "Mattel"],
     );
+  }
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS tb_usuarios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      email TEXT UNIQUE, 
+      senha TEXT,
+      logado BOOLEAN DEFAULT 0
+    );
+  `);
+
+  const firstRowUsuarios = await db.getFirstAsync(
+    "SELECT count(*) as count FROM tb_usuarios",
+  );
+
+  if (firstRowUsuarios && firstRowUsuarios.count === 0) {
+    await db.runAsync("INSERT INTO tb_usuarios (email, senha) VALUES (?, ?)", [
+      "felipe.lima@gmail.com",
+      hashText("123456"),
+    ]);
+    await db.runAsync("INSERT INTO tb_usuarios (email, senha) VALUES (?, ?)", [
+      "jen.amanda@gmail.com",
+      hashText("654321"),
+    ]);
   }
 };
