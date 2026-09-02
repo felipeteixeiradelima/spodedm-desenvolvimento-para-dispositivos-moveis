@@ -30,7 +30,8 @@ export const initDB = async () => {
 
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS tb_usuarios (
-      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT,
       email TEXT UNIQUE, 
       senha TEXT
     );
@@ -41,13 +42,13 @@ export const initDB = async () => {
   );
 
   if (firstRowUsuarios && firstRowUsuarios.count === 0) {
-    await db.runAsync("INSERT INTO tb_usuarios (email, senha) VALUES (?, ?)", [
-      "felipe.lima@gmail.com",
-      hashText("123456"),
-    ]);
-    await db.runAsync("INSERT INTO tb_usuarios (email, senha) VALUES (?, ?)", [
-      "jen.amanda@gmail.com",
-      hashText("654321"),
-    ]);
+    await db.runAsync(
+      "INSERT INTO tb_usuarios (nome, email, senha) VALUES (?, ?, ?)",
+      ["Felipe Lima", "felipe.lima@gmail.com", await hashText("123456")],
+    );
+    await db.runAsync(
+      "INSERT INTO tb_usuarios (nome, email, senha) VALUES (?, ?, ?)",
+      ["Amanda Jen", "jen.amanda@gmail.com", await hashText("654321")],
+    );
   }
 };

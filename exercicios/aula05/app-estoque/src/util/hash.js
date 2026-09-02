@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
+import * as Crypto from "expo-crypto";
 
-export function hashText(input) {
-  return createHash("sha256").update(input).digest("hex");
+export async function hashText(input) {
+  return await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, input);
 }

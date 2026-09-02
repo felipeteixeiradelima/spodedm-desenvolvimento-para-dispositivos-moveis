@@ -1,15 +1,18 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { InventoryProvider } from "./src/contexts/InventoryContext";
+import { UserProvider } from "./src/contexts/UserContext";
 import AppNavigator from "./src/navigation/AppNavigator";
 
 export default function App() {
   return (
-    <InventoryProvider>
-      <NavigationContainer>
-        <AppNavigator />
-      </NavigationContainer>
-    </InventoryProvider>
+    <UserProvider>
+      <InventoryProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </InventoryProvider>
+    </UserProvider>
   );
 }
 

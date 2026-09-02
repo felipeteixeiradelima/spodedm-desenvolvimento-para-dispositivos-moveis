@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -10,7 +10,7 @@ import {
 import { InventoryContext } from "../../contexts/InventoryContext";
 
 export default function EditProduct({ navigation }) {
-  const { produtos, editarProduto } = useContext(InventoryContext);  
+  const { produtos, editarProduto } = useContext(InventoryContext);
   const [codigo, setCodigo] = useState("");
   const [nome, setNome] = useState("");
   const [quantidade, setQuantidade] = useState("1");

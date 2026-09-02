@@ -17,12 +17,6 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    initDB()
-      .then(() => carregarProdutos())
-      .catch((err) => console.log("Erro ao inicializar banco:", err));
-  }, []);
-
   const adicionarProduto = async (codigo, nome, quantidade, fornecedor) => {
     try {
       const db = await SQLite.openDatabaseAsync("bd_estoque.db");
