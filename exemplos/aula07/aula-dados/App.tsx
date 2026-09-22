@@ -12,28 +12,31 @@ export default function App() {
   );
 
   return (
-    <View>
-      <View style={styles.loading}>
-        <Text>Carregando Banco de Dados...</Text>
-      </View>
-      <SQLiteProvider databaseName="walletx.db" onInit={initializeDatabase}>
-        <SafeAreaView style={styles.container}>
-          {currentScreen === "Home" ? <Home /> : <Settings />}
-          <View style={styles.navBar}>
-            <Button
-              title="Gastos (SQLite)"
-              color={currentScreen === "Home" ? "#2196F3" : "gray"}
-              onPress={() => setCurrentScreen("Home")}
-            />
-            <Button
-              title="Perfil (AsyncStorage)"
-              color={currentScreen === "Settings" ? "#2196F3" : "gray"}
-              onPress={() => setCurrentScreen("Settings")}
-            />
-          </View>
-        </SafeAreaView>
-      </SQLiteProvider>
-    </View>
+    <SQLiteProvider
+      databaseName="walletx.db"
+      onInit={initializeDatabase}
+      fallback={
+        <View style={styles.loading}>
+          <Text>Carregando Banco de Dados...</Text>
+        </View>
+      }
+    >
+      <SafeAreaView style={styles.container}>
+        {currentScreen === "Home" ? <Home /> : <Settings />}
+        <View style={styles.navBar}>
+          <Button
+            title="Gastos (SQLite)"
+            color={currentScreen === "Home" ? "#2196F3" : "gray"}
+            onPress={() => setCurrentScreen("Home")}
+          />
+          <Button
+            title="Perfil (AsyncStorage)"
+            color={currentScreen === "Settings" ? "#2196F3" : "gray"}
+            onPress={() => setCurrentScreen("Settings")}
+          />
+        </View>
+      </SafeAreaView>
+    </SQLiteProvider>
   );
 }
 
