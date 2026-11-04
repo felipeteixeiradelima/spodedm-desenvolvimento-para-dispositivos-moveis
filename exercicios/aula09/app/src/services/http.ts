@@ -1,4 +1,7 @@
-import { API_URL, TIMEOUT_PADRAO_MS } from '../config';
+import { TIMEOUT_PADRAO_MS } from '../config';
+import { obterEstadoConfigServidor } from './configuracaoServidor';
+import { servidorEmbutido } from './servidorEmbutido';
+import { Platform } from 'react-native';
 
 /**
  * Aula 1 - Exercício 5: requisições com timeout (AbortController) e erros
@@ -20,31 +23,102 @@ export class ErroRequisicao extends Error {
 
 export type OpcoesRequisicao = RequestInit & { timeoutMs?: number };
 
+export function obterBaseUrl(): string {
+  return obterEstadoConfigServidor().apiUrl;
+}
+
 export function url(caminho: string): string {
-  return /^https?:\/\//.test(caminho) ? caminho : `${API_URL}${caminho.startsWith('/') ? '' : '/'}${caminho}`;
+  if (/^https?:\/\//.test(caminho)) return caminho;
+  const baseUrl = obterBaseUrl();
+  return `${baseUrl}${caminho.startsWith('/') ? '' : '/'}${caminho}`;
 }
 
 /**
- * Faz um fetch que é abortado após `timeoutMs` (padrão 5 s).
- * - Resolve com a Response para status 2xx e 304.
- * - Rejeita com ErroRequisicao nos demais casos (timeout, rede, 404, 409, 5xx...).
+ * Faz uma requisição com suporte a:
+ * 1. Servidor Embutido (In-App Mock Server para testes autônomos no celular em qualquer rede)
+ * 2. Servidor Remoto / Túnel HTTP
+ * - Timeout de 5s via AbortController
+ * - Classificação precisa de erros (timeout, rede, 404, 409, 5xx)
  */
 export async function requisicao(caminho: string, opcoes: OpcoesRequisicao = {}): Promise<Response> {
   const { timeoutMs = TIMEOUT_PADRAO_MS, ...init } = opcoes;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
+  const config = obterEstadoConfigServidor();
+
+  // Caso 1: Servidor Embutido no App
+  if (config.modoEmbutido && !/^https?:\/\//.test(caminho)) {
+    try {
+      const headersMap: Record<string, string> = {};
+      if (init.headers) {
+        if (init.headers instanceof Headers) {
+          init.headers.forEach((v, k) => (headersMap[k] = v));
+        } else if (Array.isArray(init.headers)) {
+          init.headers.forEach(([k, v]) => (headersMap[k] = v));
+        } else {
+          Object.assign(headersMap, init.headers);
+        }
+      }
+
+      const resp = await servidorEmbutido.despachar(
+        caminho,
+        init.method || 'GET',
+        init.body as string | undefined,
+        headersMap,
+        controller.signal,
+      );
+
+      clearTimeout(timer);
+      if (resp.ok || resp.status === 304) return resp;
+
+      const corpo = await resp.json().catch(() => undefined);
+      if (resp.status === 404) {
+        throw new ErroRequisicao('nao-encontrado', 'Recurso não encontrado (erro 404).', 404, corpo);
+      }
+      if (resp.status === 409) {
+        throw new ErroRequisicao('conflito', 'Conflito de versão (erro 409).', 409, corpo);
+      }
+      throw new ErroRequisicao('http', `Erro do servidor (HTTP ${resp.status}).`, resp.status, corpo);
+    } catch (e) {
+      clearTimeout(timer);
+      if (e instanceof ErroRequisicao) throw e;
+      if (controller.signal.aborted || (e as any)?.name === 'AbortError') {
+        throw new ErroRequisicao('timeout', `Tempo esgotado: o servidor não respondeu em ${timeoutMs / 1000} s.`);
+      }
+      throw new ErroRequisicao('rede', 'Erro ao processar requisição no servidor embutido.');
+    }
+  }
+
+  // Caso 2: Requisição HTTP Real
   let resposta: Response;
+  const urlDestino = url(caminho);
+
   try {
-    resposta = await fetch(url(caminho), {
+    resposta = await fetch(urlDestino, {
       ...init,
-      headers: { Accept: 'application/json', ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...init.headers },
+      headers: {
+        Accept: 'application/json',
+        ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+        ...init.headers,
+      },
       signal: controller.signal,
     });
   } catch (e) {
     if (controller.signal.aborted) {
       throw new ErroRequisicao('timeout', `Tempo esgotado: o servidor não respondeu em ${timeoutMs / 1000} s.`);
     }
+
+    const ehCelular = Platform.OS === 'android' || Platform.OS === 'ios';
+    const ehLocalhost = urlDestino.includes('localhost') || urlDestino.includes('127.0.0.1');
+
+    if (ehCelular && ehLocalhost) {
+      throw new ErroRequisicao(
+        'rede',
+        'No celular físico, localhost aponta para o próprio celular. Clique em ⚙️ no topo para ativar o Servidor Embutido ou configure o túnel/IP da sua máquina.',
+      );
+    }
+
     throw new ErroRequisicao('rede', 'Sem conexão com a internet ou servidor inacessível.');
   } finally {
     clearTimeout(timer);
