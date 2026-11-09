@@ -1,0 +1,12 @@
+{
+  "name": "aula09-servidor",
+  "version": "1.0.0",
+  "description": "Servidor de apoio para os exercícios da Aula 09 (Conectividade, Offline, Sync e ETag)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "tunnel": "npx --yes localtunnel --port 3000",
+    "tunnel:ngrok": "npx --yes @expo/ngrok http 3000"
+  },
+  "private": true
+}
